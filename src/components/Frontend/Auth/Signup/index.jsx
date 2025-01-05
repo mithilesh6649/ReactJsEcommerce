@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-
+import Joi from 'joi';
+import schema from "../../validator"
 const Signup = () => {
     const navigate = useNavigate()
     const [passwordType, setPasswordType] = useState("password")
@@ -12,60 +13,90 @@ const Signup = () => {
         email: '',
         password: ''
     })
+    const [errors, setErrors] = useState({});
 
+    const signupFcn = (e) => {
+        e.preventDefault();
+
+        const { error } = schema.validate(formValue, { abortEarly: false });
+
+        if (error) {
+            const errorMessages = error.details.reduce((acc, item) => {
+                acc[item.path[0]] = item.message;
+                return acc;
+            }, {});
+            setErrors(errorMessages);
+        } else {
+            // If no errors, submit form data
+            console.log('Form submitted successfully with data:', formData);
+            setErrors({});
+        }
+
+
+
+    }
 
 
     const handleOnChange = (e) => {
-        let currentInput = e.target;
+        var currentElement = e.target;
+        var value = currentElement.value;
+        var name = currentElement.name;
         setFormValue({
             ...formValue,
-            [currentInput.name]: currentInput.value
+            [name]: value
         });
-        setError(null)
-        console.log(formValue);
+
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: null });
+        }
     }
+
+
 
     return (
         <div className="grid md:grid-cols-2 md:h-screen md:overflow-hidden animate__animated animate__fadeIn">
             <img src="/images/signup.jpg" className="w-full md:h-full h-24 object-cover" />
             <div className="flex flex-col md:p-16 p-8">
+                {JSON.stringify(formValue)}
                 <h1 className="text-4xl font-bold">New User</h1>
                 <p className="text-lg text-gray-600">Create your account to start shopping</p>
-                <form className="mt-8 space-y-6">
+                <form className="mt-8 space-y-6" onSubmit={signupFcn} >
                     <div className="flex flex-col">
                         <label className="font-semibold text-lg mb-1">Fullname</label>
                         <input
                             onChange={handleOnChange}
-                            required
                             name="fullname"
                             placeholder="Er Mithilesh Kumar"
                             className="p-3 border border-gray-300 rounded"
                         />
+                        {errors.fullname && <span style={{ color: 'red' }}>{errors.fullname}</span>}
                     </div>
 
                     <div className="flex flex-col">
                         <label className="font-semibold text-lg mb-1">Email id</label>
                         <input
                             onChange={handleOnChange}
-                            required
+
                             type="email"
                             name="email"
                             placeholder="example@mail.com"
                             className="p-3 border border-gray-300 rounded"
                         />
+                        {errors.email && <span style={{ color: 'red' }}>{errors.email}</span>}
+
                     </div>
 
                     <div className="flex flex-col relative">
                         <label className="font-semibold text-lg mb-1">Password</label>
                         <input
                             onChange={handleOnChange}
-                            required
+
                             type={passwordType}
                             name="password"
                             placeholder="********"
                             className="p-3 border border-gray-300 rounded"
                         />
-
+                        {errors.password && <span style={{ color: 'red' }}>{errors.password}</span>}
                     </div>
                     {
                         loader ?
@@ -89,7 +120,7 @@ const Signup = () => {
                     </div>
                 }
             </div>
-        </div>
+        </div >
     )
 }
 
