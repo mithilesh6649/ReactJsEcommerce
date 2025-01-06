@@ -1,41 +1,61 @@
-import React from 'react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import firebaseConfigApp from "../../util/firebase.config";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth"
+const auth = getAuth(firebaseConfigApp)
+
 const Layout = ({ children }) => {
+    const [open, setOpen] = useState(false)
+    const [dropdown, setDropdown] = useState(false)
+    const [session, setSession] = useState(null)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            console.log(auth)
+            if (user) {
+                setSession(user)
+            }
+            else {
+                setSession(false)
+            }
+        })
+    }, [])
+
+
 
     const menus = [
         {
             label: "Home",
-            href: "/"
+            href: '/'
         },
         {
             label: "Products",
-            href: "/products"
+            href: '/products'
         },
         {
             label: "Category",
-            href: "/category"
+            href: '/category'
         },
         {
-            label: "Contact Us",
-            href: "/contact-us"
+            label: "Contact us",
+            href: '/contact-us'
         }
-    ];
+    ]
 
-
-    // Component
-
-    const Menu = (item) => {
-        console.log(item.data.href);
-        return (<>
-            <li><Link to={item.data.href} className="text-gray-700 hover:text-blue-600">{item.data.label}</Link></li>
-        </>)
+    const mobileLink = (href) => {
+        navigate(href)
+        setOpen(false)
     }
-
+    if (session === null)
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-blue-600"></div>
+            </div>
+        );
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
-            {/* Header */}
+        <div>
             <nav className="sticky top-0 left-0 shadow-lg bg-white">
                 <div className="w-10/12 mx-auto flex items-center justify-between">
                     <img
@@ -58,32 +78,64 @@ const Layout = ({ children }) => {
                                 </li>
                             ))
                         }
+                        {
+                            !session &&
+                            <>
+                                <Link
+                                    className="block py-8 text-center hover:bg-blue-600 w-[100px] hover:text-white"
+                                    to="/login"
+                                >Login</Link>
+
+                                <Link
+                                    className="bg-blue-600 py-3 px-10 text-md font-semibold text-white block text-center hover:bg-rose-600 hover:text-white"
+                                    to="/signup"
+                                >Signup</Link>
+                            </>
+                        }
 
 
-                        <Link
-                            className="block py-8 text-center hover:bg-blue-600 w-[100px] hover:text-white"
-                            to="/login"
-                        >Login</Link>
 
-                        <Link
-                            className="bg-blue-600 py-3 px-10 text-md font-semibold text-white block text-center hover:bg-rose-600 hover:text-white"
-                            to="/signup"
-                        >Signup</Link>
+                        {
+                            session &&
+                            <>
+                                <h2 onClick={() => setDropdown(!dropdown)} >Raj Kumar</h2>
+                                {dropdown &&
+                                    <>
+                                        <div className=" justify-center bg-gray-100">
+                                            <div className="absolute right-0 z-10 mt-300 w-48 bg-white rounded-md shadow-lg">
+                                                <div className="py-1">
+                                                    <a href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                        Profile
+                                                    </a>
+                                                    <button
+                                                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                                                        onClick={() => signOut(auth)}
+                                                    >
+                                                        Logout
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
+                            </>
+                        }
 
-
-
-
+                        {
+                            session && <>
+                                <button
+                                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                                    onClick={() => signOut(auth)}
+                                >
+                                    Logout
+                                </button></>
+                        }
                     </ul>
                 </div>
             </nav >
-            {/* Main Content */}
-            <main className="flex-grow">
-                <div className="container mx-auto py-8">
-                    {children}
-                </div>
-            </main>
-
-            {/* Footer */}
+            <div>
+                {children}
+            </div>
             <footer className="bg-orange-600 py-16">
                 <div className="w-10/12 mx-auto grid md:grid-cols-4 md:gap-0 gap-8">
                     <div>
@@ -158,10 +210,18 @@ const Layout = ({ children }) => {
                     transition: '0.3s'
                 }}
             >
-
+                <div className="flex flex-col p-8 gap-6">
+                    {
+                        menus.map((item, index) => (
+                            <button onClick={() => mobileLink(item.href)} key={index} className="text-white">
+                                {item.label}
+                            </button>
+                        ))
+                    }
+                </div>
             </aside>
-        </div>
-    );
-};
+        </div >
+    )
+}
 
-export default Layout;
+export default Layout

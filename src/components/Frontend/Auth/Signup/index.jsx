@@ -2,6 +2,9 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Joi from 'joi';
 import schema from "../../validator"
+import firebaseConfigApp from "../../../../util/firebase.config";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+const auth = getAuth(firebaseConfigApp);
 const Signup = () => {
     const navigate = useNavigate()
     const [passwordType, setPasswordType] = useState("password")
@@ -15,7 +18,7 @@ const Signup = () => {
     })
     const [errors, setErrors] = useState({});
 
-    const signupFcn = (e) => {
+    const signupFcn = async (e) => {
         e.preventDefault();
 
         const { error } = schema.validate(formValue, { abortEarly: false });
@@ -28,9 +31,26 @@ const Signup = () => {
             setErrors(errorMessages);
         } else {
             // If no errors, submit form data
-            console.log('Form submitted successfully with data:', formData);
+            // console.log('Form submitted successfully with data:', formData);
             setErrors({});
         }
+
+
+
+        try {
+            e.preventDefault();
+            setLoader(true)
+            const user = await createUserWithEmailAndPassword(auth, formValue.email, formValue.password);
+            console.log(user);
+
+            navigate('/')
+        } catch (error) {
+            setError(error.message)
+        } finally {
+            console.log('fffffffff')
+            setLoader(false)
+        }
+
 
 
 
