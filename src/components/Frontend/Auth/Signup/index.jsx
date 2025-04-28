@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom"
 import Joi from 'joi';
 import schema from "../../validator"
 import firebaseConfigApp from "../../../../util/firebase.config";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+
 const auth = getAuth(firebaseConfigApp);
 const Signup = () => {
     const navigate = useNavigate()
@@ -38,11 +39,10 @@ const Signup = () => {
 
 
         try {
-            e.preventDefault();
+            e.preventDefault()
             setLoader(true)
-            const user = await createUserWithEmailAndPassword(auth, formValue.email, formValue.password);
-            console.log(user);
-
+            await createUserWithEmailAndPassword(auth, formValue.email, formValue.password)
+            await updateProfile(auth.currentUser, { displayName: formValue.fullname })
             navigate('/')
         } catch (error) {
             setError(error.message)

@@ -80,6 +80,10 @@ const Home = () => {
         <Layout>
             <div>
                 <header>
+
+                    <br></br>
+                    <br></br>
+                    <br></br>
                     <Swiper
                         pagination={true}
                         navigation={true}

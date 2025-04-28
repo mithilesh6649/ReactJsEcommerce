@@ -98,15 +98,29 @@ const Layout = ({ children }) => {
                         {
                             session &&
                             <>
-                                <h2 onClick={() => setDropdown(!dropdown)} >Raj Kumar</h2>
+                                <h2 onClick={() => setDropdown(!dropdown)} >
+                                    {
+                                        session && session.displayName
+                                    }
+
+                                    {
+                                        !session && "Raj Kumar"
+                                    }
+                                </h2>
                                 {dropdown &&
                                     <>
-                                        <div className=" justify-center bg-gray-100">
+                                        <div className=" justify-center bg-gray-100 mb-5">
+                                            <br></br>
+                                            <br></br>
+
                                             <div className="absolute right-0 z-10 mt-300 w-48 bg-white rounded-md shadow-lg">
                                                 <div className="py-1">
                                                     <a href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                         Profile
                                                     </a>
+                                                    <Link to="/cart" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                        Cart
+                                                    </Link>
                                                     <button
                                                         className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                                                         onClick={() => signOut(auth)}
@@ -121,15 +135,7 @@ const Layout = ({ children }) => {
                             </>
                         }
 
-                        {
-                            session && <>
-                                <button
-                                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                                    onClick={() => signOut(auth)}
-                                >
-                                    Logout
-                                </button></>
-                        }
+
                     </ul>
                 </div>
             </nav >

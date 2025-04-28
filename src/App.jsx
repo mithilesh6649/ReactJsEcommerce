@@ -14,6 +14,9 @@ import Dashboard from './components/Admin/Dashboard'
 import Homepage from './components/Frontend/Homepage'
 import Login from './components/Frontend/Auth/Login'
 import Signup from './components/Frontend/Auth/Signup'
+import Cart from './components/Frontend/Cart'
+import PreGuard from './components/Guard/PreGuard'
+import Profile from './components/Frontend/Profile'
 const App = () => {
   return (
     <BrowserRouter>
@@ -26,8 +29,12 @@ const App = () => {
           <Route path='settings' element={<Setting />} />
         </Route>
         <Route path='/' element={<Homepage />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route element={<PreGuard />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+        </Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>
     </BrowserRouter>

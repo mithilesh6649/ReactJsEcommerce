@@ -17,6 +17,7 @@ const Login = () => {
     const loginFcn = async (e) => {
 
         try {
+            setLoader(true);
             e.preventDefault();
             if (formValue.email.length <= 0) {
                 setError('Email is required')
@@ -28,7 +29,10 @@ const Login = () => {
             console.log(user);
 
         } catch (err) {
-            seterr(err.message)
+            seterr(err.message);
+            setLoader(false);
+        } finally {
+            setLoader(true);
         }
     }
 
@@ -83,8 +87,12 @@ const Login = () => {
                             }
                         </button>
                     </div>
-
-                    <button className="py-3 px-8 rounded bg-blue-600 text-white font-semibold hover:bg-rose-600">Login</button>
+                    {
+                        loader ?
+                            <h1 className="text-lg font-semibold text-gray-600">Loading...</h1>
+                            :
+                            <button className="py-3 px-8 rounded bg-blue-600 text-white font-semibold hover:bg-rose-600">Login</button>
+                    }
                 </form>
                 <div className="mt-2">
                     Don`t have an account ? <Link to="/signup" className="text-blue-600 font-semibold">Register now</Link>
